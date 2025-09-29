@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Bot, Search, Zap, Shield } from 'lucide-react';
-import { ApiKeyManager } from '../components/ApiKeyManager';
+import { Bot, Search, Zap, Shield, Eye } from 'lucide-react';
+import { ResultCard } from '../components/ResultCard';
+import { SignalTable } from '../components/SignalTable';
+import { ActionTable } from '../components/ActionTable';
 import { apiService } from '../services/api';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,6 +25,68 @@ export default function StartPage() {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDemo, setShowDemo] = useState(false);
+
+  // Demo result data
+  const demoResult = {
+    human_score: 95,
+    confidence: 90, // Convert 0.9 to 90%
+    summary_bullets: [
+      "Account shows consistent, passionate engagement with the 'One Piece' fandom.",
+      "Tweets use informal, fan-specific language and memes, typical of human interaction.",
+      "High frequency of posts, often multiple times a day, indicating active participation.",
+      "Posts receive significant engagement (likes, retweets, replies), suggesting a real audience.",
+      "Content varies within the niche, including opinions, reactions, and news."
+    ],
+    top_signals: [
+      {
+        signal: "Content Niche",
+        value: "One Piece fandom",
+        weight: 0.3,
+        explain: "All tweets consistently focus on 'One Piece' (anime/manga), indicating a dedicated fan."
+      },
+      {
+        signal: "Informal Language", 
+        value: "Fan slang",
+        weight: 0.25,
+        explain: "Tweets contain fan-specific slang like 'ODA COOKED,' 'Gear 5 Luffy,' and 'Toon Force'."
+      },
+      {
+        signal: "High Engagement",
+        value: "Thousands of likes, hundreds of RTs/replies", 
+        weight: 0.2,
+        explain: "Metrics show consistently high likes, retweets, and replies, suggesting a real, active audience."
+      },
+      {
+        signal: "Posting Frequency",
+        value: "Multiple posts daily",
+        weight: 0.15, 
+        explain: "Timestamps indicate multiple posts per day, showing active, real-time reactions."
+      },
+      {
+        signal: "Opinionated Content",
+        value: "Strong opinions/debates",
+        weight: 0.1,
+        explain: "Tweets express strong opinions and engage in fandom discussions, typical of human interaction."
+      }
+    ],
+    action_table: [
+      {
+        action: "Monitor",
+        priority: "low" as const, // Convert to lowercase to match our enum
+        rationale: "Standard practice for any active account to observe long-term patterns.",
+        estimated_effort: "Low"
+      },
+      {
+        action: "No further action", 
+        priority: "low" as const,
+        rationale: "Current data strongly indicates human activity, requiring no immediate intervention.",
+        estimated_effort: "Low"
+      }
+    ],
+    username: "one_piece_fan",
+    analysis_date: new Date().toISOString()
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,11 +193,19 @@ export default function StartPage() {
                       </>
                     )}
                   </Button>
+
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setShowDemo(!showDemo)}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    {showDemo ? 'Hide' : 'View'} Demo Result
+                  </Button>
                 </form>
               </CardContent>
             </Card>
-
-            <ApiKeyManager />
           </div>
 
           {/* Info Section */}
@@ -196,6 +268,22 @@ export default function StartPage() {
             </Card>
           </div>
         </div>
+
+        {/* Demo Results Section */}
+        {showDemo && (
+          <div className="max-w-4xl mx-auto mt-8 space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-2">Demo Analysis Result</h2>
+              <p className="text-muted-foreground">
+                Example output showing how your AI result data is displayed
+              </p>
+            </div>
+            
+            <ResultCard result={demoResult} />
+            <SignalTable signals={demoResult.top_signals} />
+            <ActionTable actions={demoResult.action_table} />
+          </div>
+        )}
       </div>
     </div>
   );
