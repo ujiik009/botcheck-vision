@@ -1,73 +1,295 @@
-# Welcome to your Lovable project
+# Account Bot-Check Frontend
 
-## Project info
+A modern React TypeScript frontend for real-time social media bot detection analysis. Features live progress tracking, Socket.IO integration, and comprehensive result visualization.
 
-**URL**: https://lovable.dev/projects/3336f13e-0a96-4bef-b4fa-84e02a39293a
+![Bot-Check Demo](https://placeholder-image-url)
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- 🤖 **Real-time Bot Analysis** - Live progress tracking via Socket.IO
+- 📊 **Comprehensive Results** - Human likelihood scores with detailed explanations  
+- 🔍 **Signal Analysis** - Top behavioral signals with weights and explanations
+- 📋 **Action Recommendations** - Prioritized actions with effort estimates
+- 🔐 **API Key Management** - Secure authentication support
+- 📱 **Responsive Design** - Works on desktop and mobile
+- 🌙 **Dark Theme** - Professional cybersecurity aesthetic
+- 💾 **Local Storage** - Persists progress logs and settings
+- 🔄 **Auto-Reconnect** - Robust Socket.IO connection handling
 
-**Use Lovable**
+## Quick Start
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3336f13e-0a96-4bef-b4fa-84e02a39293a) and start prompting.
+### Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ and npm
+- Backend server running on `http://localhost:3000` (or configured endpoint)
 
-**Use your preferred IDE**
+### Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Clone the repository
+git clone <repository-url>
+cd bot-check-frontend
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Install dependencies
+npm install
 
-Follow these steps:
+# Copy environment configuration
+cp .env.example .env
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Build for Production
 
-**Use GitHub Codespaces**
+```bash
+# Build for production
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview production build
+npm run preview
+```
 
-## What technologies are used for this project?
+## Environment Configuration
 
-This project is built with:
+Create a `.env` file in the root directory:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+# Backend API base URL
+VITE_API_BASE=http://localhost:3000
 
-## How can I deploy this project?
+# Socket.IO server URL  
+VITE_SOCKET_URL=http://localhost:3000
 
-Simply open [Lovable](https://lovable.dev/projects/3336f13e-0a96-4bef-b4fa-84e02a39293a) and click on Share -> Publish.
+# Optional API key for authenticated requests
+VITE_API_KEY=your_api_key_here
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Usage
 
-Yes, you can!
+### Starting a Bot Check
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Navigate to the home page
+2. Enter a social media username (without @)
+3. Optionally configure an API key for authenticated requests
+4. Click "Start Bot Check"
+5. You'll be redirected to the job page with live progress
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Monitoring Progress
+
+The job page provides:
+- **Real-time progress bar** with stage-based completion estimates
+- **Live log stream** with timestamps and stage indicators
+- **Connection status** indicator
+- **Auto-reconnection** on network issues
+- **Buffered event replay** for late joins
+
+### Viewing Results
+
+When analysis completes, you'll see:
+- **Human likelihood score** (0-100) with confidence level
+- **Summary bullets** highlighting key findings
+- **Top signals table** showing behavioral indicators
+- **Action recommendations** prioritized by importance
+- **Download/copy options** for JSON results
+
+### API Key Management
+
+- Click the API Key section to add/edit your key
+- Keys are stored securely in localStorage
+- Used for authenticated requests to backend
+- Optional but may provide enhanced analysis
+
+## API Integration
+
+The frontend expects these backend endpoints:
+
+### HTTP Endpoints
+
+```typescript
+// Start bot check
+GET /api/botcheck/:username
+Response: { "jobId": "uuid" }
+
+// Get job metadata  
+GET /api/job/:jobId
+Response: JobMetadata
+
+// Get final results
+GET /api/job/:jobId/result
+Response: ScoringResult
+```
+
+### Socket.IO Events
+
+```typescript
+// Client events
+socket.emit('joinJobRoom', { jobId: string })
+
+// Server events  
+socket.on('progress', (event: ProgressEvent) => {
+  // Real-time progress updates
+})
+```
+
+## Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── ActionTable.tsx # Action recommendations display
+│   ├── ApiKeyManager.tsx # API key configuration
+│   ├── LogList.tsx     # Progress log viewer
+│   ├── ProgressBar.tsx # Stage progress indicator
+│   ├── ResultCard.tsx  # Score summary card
+│   └── SignalTable.tsx # Signal analysis table
+├── hooks/              # Custom React hooks
+│   └── useSocketJob.ts # Socket.IO job management
+├── pages/              # Application pages
+│   ├── StartPage.tsx   # Landing page with form
+│   ├── JobPage.tsx     # Job monitoring page
+│   └── NotFound.tsx    # 404 error page
+├── services/           # External service integration
+│   └── api.ts          # HTTP API client
+├── utils/              # Utility functions
+│   └── localStore.ts   # localStorage management
+├── types.ts            # TypeScript type definitions
+├── App.tsx             # Main application component
+└── main.tsx            # Application entry point
+```
+
+## Development
+
+### Available Scripts
+
+```bash
+# Development server with hot reload
+npm run dev
+
+# Type checking
+npm run type-check
+
+# Build for production
+npm run build
+
+# Preview production build  
+npm run preview
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test file
+npm test -- LogList.test.tsx
+```
+
+### Code Quality
+
+The project uses:
+- **TypeScript** for type safety
+- **ESLint** for code linting
+- **Prettier** for code formatting
+- **Zod** for runtime validation
+- **Vitest** for unit testing
+
+## Architecture
+
+### State Management
+- React hooks for local component state
+- Context API for global state (if needed)
+- localStorage for persistence
+- React Query for server state
+
+### Real-time Communication
+- Socket.IO client for live updates
+- Automatic reconnection with exponential backoff
+- Event buffering and replay
+- Connection status monitoring
+
+### Error Handling
+- Zod validation for all external data
+- Graceful degradation on network issues
+- User-friendly error messages
+- Retry mechanisms for failed operations
+
+### Performance
+- Code splitting with React.lazy
+- Memoized components with React.memo
+- Debounced input validation
+- Optimistic UI updates
+
+## Browser Support
+
+- Chrome 88+
+- Firefox 85+ 
+- Safari 14+
+- Edge 88+
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For issues and questions:
+- Create an issue in this repository
+- Check existing documentation
+- Review the troubleshooting guide below
+
+## Troubleshooting
+
+### Common Issues
+
+**Connection Failed**
+- Verify backend server is running
+- Check VITE_SOCKET_URL in .env
+- Ensure firewall allows Socket.IO connections
+
+**Job Not Found**
+- Verify job ID format (must be UUID)
+- Check if job exists on backend
+- Try refreshing the page
+
+**API Errors**
+- Verify VITE_API_BASE configuration
+- Check network connectivity
+- Ensure API key is valid (if required)
+
+**Build Errors**
+- Run `npm install` to update dependencies
+- Clear node_modules and reinstall
+- Check Node.js version compatibility
+
+### Performance Issues
+
+- Enable React DevTools for component profiling
+- Check Network tab for slow requests
+- Monitor console for Socket.IO connection issues
+- Verify localStorage isn't full
+
+---
+
+Built with ❤️ using React, TypeScript, and Socket.IO
